@@ -1,1 +1,59 @@
-aaa
+各平台的tolua编译说明
+简介
+windows版在windows下使用cmake生成sln后,使用vs编译生成tolua.dll文件
+android在mac下,执行一键打包脚本生成tolua.so文件
+ios版在mac下,执行一键打包脚本生成tolua.a文件
+编译环境
+mac
+�打开终端,�mkdir ~/.local,cd ~/.local
+下载android-nkd-r16b,并�移动到~/.local目录中
+建立$NDK环境变量,vi ~/.bash_profile,复制export NDK=~/.local/android-ndk-r16b到文件中,保存退出
+安装Command Line Tools for Xcode,xcode-select --install
+安装homebrew,ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"�
+��安装cmake,brew install cmake
+windows
+安装cmake, https://cmake.org/download/
+安装vs2017
+安装git
+拉取源代码
+mac下打开终端,window下打开gitbash
+新建一个目录,后面将这个目录统一称为root,将https://github.com/zhuyadong/tolua_runtime/blob/master/pullallsrc.sh�放在目录中
+终端打开该目录,执行./pullallsrc.sh拉取代码
+拉取后的目录结构如下
+pullallsrc.sh
+protobuf-cpp
+tolua_runtime
+LuaPbIntf
+当目录结构不同时,手动改成这样即可
+编译
+以下都是编译release版,目前没写一键编译debug版的脚本
+
+android
+mac下打开终端,进入tolua_runtime目录,执行./onekeybuild_android.sh,编译结束后会显示tolua.so的路径
+ios
+mac下打开终端,进入tolua_runtime目录,执行./onekeybuild_ios.sh,编译结束后会显示tolua.a的路径
+window
+只有半自动脚本,需部分手动操作,支持Relasea和Debug,Debug版操作只需vs中改选Debug即可,但链接的luajit都是Release的
+
+window下打开gitbash,进入tolua_runtime目录,执行./prebuild_win-step1.sh,修改protobuf相关代码的命名空间以及生成必要目录
+打开cmake gui
+Where is the source code: 这里浏览到root/protobuf-cpp/cmake
+Where to build the binaries: 这里浏览到root/protobuf-cpp/build_win/x64
+依次点击下方的Configure,Generate,Open Project按钮,打开vs,改为解决方案配置改为Release,右击libprotobuf项目编译出x64版本的protobuf.lib
+回到cmake gui中
+Where to build the binaries: 这里浏览到root/protobuf-cpp/build_win/x86
+依次点击下方的Configure,Generate,Open Project按钮,打开vs,改为解决方案配置改为Release,右击libprotobuf项目编译出x86版本的protobuf.lib
+回到gitbash中,执行./prebuild_win-step2.sh,将上面生成的lib拷贝到tolua_runtime中对应的目录
+回到cmake gui中
+Where is the source code: 这里浏览到root/tolua_runtime
+Where to build the binaries: 这里浏览到root/tolua_runtime/build_win/x64
+依次点击下方的Configure,Generate,Open Project按钮,打开vs,改为解决方案配置改为Release,右击tolua项目编译出x64版本的tolua.dll
+回到cmake gui中
+Where to build the binaries: 这里浏览到root/tolua_runtime/build_win/x86
+依次点击下方的Configure,Generate,Open Project按钮,打开vs,改为解决方案配置改为Release,右击tolua项目编译出x86版本的tolua.dll
+编译luajit
+luajit的已经编译好放在引用目录中,不需要再编译,如需要重新编译可使用tolua_rumtime中自带的编译脚本
+
+build_arm.sh build_ios.sh build_x86.sh build_win32.sh build_win64.sh
+也可以参照https://www.cnblogs.com/ios122/p/9334120.html
+goodluck
